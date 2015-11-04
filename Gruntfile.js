@@ -5,7 +5,13 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+                banner: '/**\n' +
+                        ' * <%= pkg.name %> v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                        ' * <%= pkg.homepage %>\n' +
+                        ' *\n' +
+                        ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;\n' +
+                        ' * Licensed under the MIT license\n' +
+                        ' */',
                 sourceMap: true
             },
             dist: {
@@ -20,6 +26,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     // Default task(s).
-    grunt.registerTask('build', ['uglify']);
+    grunt.registerTask('default', ['uglify']);
 
 };
