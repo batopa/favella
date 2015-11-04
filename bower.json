@@ -1,0 +1,23 @@
+{
+  "name": "favella",
+  "description": "Make your console speak",
+  "main": "./src/favella.js",
+  "authors": [
+    "Alberto Pagliarini"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "speech",
+    "speak",
+    "console"
+  ],
+  "homepage": "https://github.com/batopa/favella",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
