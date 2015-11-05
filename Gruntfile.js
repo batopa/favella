@@ -3,6 +3,13 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        copy: {
+            dist: {
+                files: [
+                    {expand: true, flatten: true, src: 'src/favella.js', dest: 'dist/', filter: 'isFile'}
+                ]
+            }
+        },
         uglify: {
             options: {
                 banner: '/**\n' +
@@ -22,10 +29,11 @@ module.exports = function(grunt) {
         }
     });
 
-    // Load the plugin that provides the "uglify" task.
+    // Load the plugin that provides tasks
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify']);
+    grunt.registerTask('default', ['copy', 'uglify']);
 
 };
