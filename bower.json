@@ -1,7 +1,7 @@
 {
   "name": "favella",
   "description": "Make your console speak",
-  "main": "./src/favella.js",
+  "main": "dist/favella.js",
   "authors": [
     "Alberto Pagliarini"
   ],
