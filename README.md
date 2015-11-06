@@ -1,6 +1,6 @@
 # Favella
 
-**Favella** (*faˈvɛlla*) is an italian word that means "speech" or better the "power of speech".
+**Favella** (*faˈvɛlla*) is an Italian word that means "speech" or better the "power of speech".
 
 The idea behind **Favella** is to **make your console error speaks** to you.
 No need to read errors, simply listen it.
@@ -51,7 +51,7 @@ console.error('what a beautiful error');
 
 ## Favella API
 
-### `Favella.speak(message, options)`
+#### `Favella.speak(message, options)`
 
 **Favella** speaks to you reading a `message`. You can use `options` to customize some `SpeechSynthesisUtterance` attributes.
 
@@ -64,14 +64,14 @@ Favella.speak('Ciao mondo', {
 });
 ```
 
-### `Favella.setup(options)`
+#### `Favella.setup(options)`
 
 Setup default **Favella** options.
 
 ```js
 Favella.setup({
     // list of curses that will be randomly appended at `console.error` messages.
-    // Simply funny. Ok ok, italian people will go wild :)
+    // Simply funny. Ok ok, Italian people will go wild :)
     curses: ['Damn', 'Shit', 'You, bastard'],
     // set true for mute the curses (false is the default)
     parentalControl: false,
@@ -80,28 +80,28 @@ Favella.setup({
 });
 ```
 
-### `Favella.mute()`
+#### `Favella.mute()`
 
 C'mon, **Favella** shut up!
 
-### `Favella.unmute()`
+#### `Favella.unmute()`
 
 Ehi, I was joking. Talk to me, please!
 
-### `Favella.getVoice(lang)`
+#### `Favella.getVoice(lang)`
 
 Return the `speechSynthesisVoices` corresponding to `lang`.
 If it is not found return `speechSynthesisVoices` for `en-US`.
 
-### `Favella.me(fail)`
+#### `Favella.me(fail)`
 
-How do you say **Favella** in italian?
+How do you say **Favella** in Italian?
 
 ```js
 Favella.me();
 ```
 
-And what happens if italian voice missing? Simulate it
+And what happens if Italian voice missing? Simulate it
 
 ```js
 Favella.me(true);

@@ -92,7 +92,7 @@ if ('speechSynthesis' in window) {
              */
             mute: function() {
                 enabled = false;
-                console.log('Ho perso la favella');
+                console.log('Ho perso la favella (I lost the power of speech)!');
             },
 
             /**
@@ -101,6 +101,7 @@ if ('speechSynthesis' in window) {
              */
             unmute: function() {
                 enabled = true;
+                console.log('Ho riacquistato la favella (I recover the power of speech)!');
             },
 
             /**
