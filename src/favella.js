@@ -10,6 +10,8 @@ if ('speechSynthesis' in window) {
 
     (function(window) {
 
+        'use strict';
+
         /**
          * Save original console error function
          * @type {Object} console.error function
@@ -103,10 +105,13 @@ if ('speechSynthesis' in window) {
 
             /**
              * Return the speechSynthesisVoices corresponding to lang
+             * If no lang corresponding exists return 'en-US'
+             *
              * @param {String} lang the language as it-IT, en-US,...
              * @return {Object} speechSynthesisVoices
              */
             getVoice: function(lang) {
+                var voice = null;
                 if (voices.length) {
                     voices.forEach(function(v) {
                         if (v.lang == lang) {
@@ -138,12 +143,6 @@ if ('speechSynthesis' in window) {
                     message = 'Something goes wrong';
                 }
 
-                message += '!';
-
-                if (!parentalControl && curses.length) {
-                    message += ' ' +  curses[Math.floor(Math.random() * curses.length)];
-                }
-
                 options = options || {};
                 Object.keys(speakOptions)
                     .forEach(function(item) {
@@ -163,7 +162,7 @@ if ('speechSynthesis' in window) {
                 msg.text = message;
 
                 msg.onend = function(e) {
-                    console.log('Finished to speak in ' + event.elapsedTime + ' seconds.');
+                    console.log('Finished to speak');
                 };
 
                 msg.onerror = function(e) {
@@ -171,6 +170,40 @@ if ('speechSynthesis' in window) {
                 };
 
                 speechSynthesis.speak(msg);
+            },
+
+            /**
+             * How do you say "favella"?
+             *
+             * @param {Boolean} fail used to test missing italian voice situation
+             * @return {void}
+             */
+            me: function(fail) {
+                var lang = (fail) ? 'en-US' : 'it-IT';
+                var voice = this.getVoice(lang);
+                if (voice) {
+                    var msg = [];
+                    if (voice.lang == 'it-IT') {
+                        msg.push('favella');
+                    } else {
+                        msg = [
+                            'Sorry, I cannot pronunce properly because missing italian voice. I will try anyway.',
+                            'favella.',
+                            'Shit!'
+                        ];
+                    }
+                    var that = this;
+                    msg.forEach(function(m) {
+                        that.speak(m, {
+                            volume: 1,
+                            rate: 1,
+                            pitch: 0,
+                            lang: voice.lang
+                        });
+                    });
+                } else {
+                    console.log('Missing voice :(');
+                }
             }
 
         };
@@ -182,7 +215,11 @@ if ('speechSynthesis' in window) {
          */
         window.console.error = function() {
             var args = Array.prototype.slice.call(arguments);
-            Favella.speak(args[0]);
+            var message = args[0];
+            if (!parentalControl && curses.length) {
+                message += '. ' +  curses[Math.floor(Math.random() * curses.length)] + '!';
+            }
+            Favella.speak(message);
             consoleError.apply(window.console, arguments);
         };
 
