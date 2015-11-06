@@ -13,7 +13,7 @@ Unfortunately that API lacking of support in most of main browsers
 so you can expect to work only in Chrome >= 43, Safari >= 8 and Opera >= 32.
 More info on [canisue.com](http://caniuse.com/#search=speechsynthesis).
 
-### Install
+## Install
 
 ### Install with bower
 
