@@ -11,7 +11,7 @@ a web API for controlling a text-to-speech output.
 
 Unfortunately that API lacking of support in most of main browsers
 so you can expect to work only in Chrome >= 43, Safari >= 8 and Opera >= 32.
-More info on [canisue.com](http://caniuse.com/#search=speechsynthesis).
+More info on [caniuse.com](http://caniuse.com/#search=speechsynthesis).
 
 ## Install
 
