@@ -41,7 +41,13 @@ if ('speechSynthesis' in window) {
             volume: 1,
             rate: 1,
             pitch: 0,
-            lang: 'en-US'
+            lang: 'en-US',
+            onstart: function(e) {},
+            onend: function(e) {},
+            onerror: function(e) {},
+            onpause: function(e) {},
+            onboundary: function(e) {},
+            onmark: function(e) {},
         };
 
         /**
@@ -63,6 +69,11 @@ if ('speechSynthesis' in window) {
          * @type {Array}
          */
         var voices = [];
+
+        // cancel pending speaking
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+        }
 
         // wait on voices to be loaded before fetching list
         window.speechSynthesis.onvoiceschanged = function() {
@@ -199,13 +210,13 @@ if ('speechSynthesis' in window) {
                 msg.lang = msg.voice.lang;
                 msg.text = message;
 
-                msg.onend = function(e) {
-                    console.log('Finished to speak');
-                };
-
-                msg.onerror = function(e) {
-                    console.log(e);
-                };
+                // add events
+                ['onstart', 'onend', 'onerror', 'onboundary', 'onmark']
+                    .forEach(function(name) {
+                        if (options[name] && typeof options[name] == 'function') {
+                            msg[name] = options[name];
+                        }
+                    });
 
                 speechSynthesis.speak(msg);
             },
