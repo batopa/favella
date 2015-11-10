@@ -83,6 +83,11 @@ if ('speechSynthesis' in window) {
                     if (options.curses) {
                         curses = options.curses;
                     }
+                    if (options.mute) {
+                        if (options.mute === true || options.mute == 'console') {
+                            this.mute(options.mute);
+                        }
+                    }
                     if (options.speakOptions) {
                         Object.keys(speakOptions)
                             .forEach(function(item) {
