@@ -3,6 +3,7 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        clean: ['dist'],
         copy: {
             dist: {
                 files: [
@@ -30,10 +31,11 @@ module.exports = function(grunt) {
     });
 
     // Load the plugin that provides tasks
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     // Default task(s).
-    grunt.registerTask('default', ['copy', 'uglify']);
+    grunt.registerTask('default', ['clean', 'copy', 'uglify']);
 
 };

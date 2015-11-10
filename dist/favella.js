@@ -21,7 +21,7 @@ if ('speechSynthesis' in window) {
         /**
          * Parental control
          * If it's true avoid to use curses
-         * @type {Boolean}
+         * @type {boolean}
          */
         var parentalControl = false;
 
@@ -46,9 +46,17 @@ if ('speechSynthesis' in window) {
 
         /**
          * true to make Favella speaks
-         * @type {Boolean}
+         * @type {boolean}
          */
         var enabled = true;
+
+        /**
+         * true to mute console.error()
+         * Favella.speak() will continue to work
+         *
+         * @type {Boolean}
+         */
+        var muteConsole = false;
 
         /**
          * List of speechSynthesisVoices available
@@ -75,6 +83,11 @@ if ('speechSynthesis' in window) {
                     if (options.curses) {
                         curses = options.curses;
                     }
+                    if (options.mute) {
+                        if (options.mute === true || options.mute == 'console') {
+                            this.mute(options.mute);
+                        }
+                    }
                     if (options.speakOptions) {
                         Object.keys(speakOptions)
                             .forEach(function(item) {
@@ -87,20 +100,45 @@ if ('speechSynthesis' in window) {
             },
 
             /**
-             * Mute it
+             * Mute all or just console.error()
+             *
+             * @param {String} what if it is 'console' then just silence the console.error()
              * @return {void}
              */
-            mute: function() {
-                enabled = false;
-                console.log('Ho perso la favella');
+            mute: function(what) {
+                if (what && what == 'console') {
+                    muteConsole = true;
+                    console.log('console.error muted');
+                } else {
+                    enabled = false;
+                    console.log('Ho perso la favella (I lost the power of speech)!');
+                }
             },
 
             /**
-             * Unmute it
+             * Unmute what is silenced
+             *
              * @return {void}
              */
             unmute: function() {
+                // only for console.log() message
+                if (!enabled) {
+                    console.log('Ho riacquistato la favella (I recover the power of speech)!');
+                } else if (muteConsole) {
+                    console.log('console.error unmuted');
+                }
                 enabled = true;
+                muteConsole = false;
+            },
+
+            /**
+             * Is Favella mute?
+             *
+             * @param {String} what
+             * @return {boolean}
+             */
+            isMute: function(what) {
+                return (what && what == 'console') ? muteConsole : !enabled;
             },
 
             /**
@@ -154,7 +192,7 @@ if ('speechSynthesis' in window) {
                 var voices = window.speechSynthesis.getVoices();
                 msg.voice = this.getVoice(options.lang);
                 console.log('Voice selected: ' + msg.voice.name);
-                //msg.voiceURI = msg.voice.voiceURI;
+                msg.voiceURI = msg.voice.voiceURI;
                 msg.volume = options.volume; // 0 to 1
                 msg.rate = options.rate; // 0.1 to 10
                 msg.pitch = options.pitch; //0 to 2
@@ -175,7 +213,7 @@ if ('speechSynthesis' in window) {
             /**
              * How do you say "favella"?
              *
-             * @param {Boolean} fail used to test missing italian voice situation
+             * @param {boolean} fail used to test missing italian voice situation
              * @return {void}
              */
             me: function(fail) {
@@ -214,12 +252,14 @@ if ('speechSynthesis' in window) {
          * @return {void}
          */
         window.console.error = function() {
-            var args = Array.prototype.slice.call(arguments);
-            var message = args[0];
-            if (!parentalControl && curses.length) {
-                message += '. ' +  curses[Math.floor(Math.random() * curses.length)] + '!';
+            if (!Favella.isMute('console')) {
+                var args = Array.prototype.slice.call(arguments);
+                var message = args[0];
+                if (!parentalControl && curses.length) {
+                    message += '. ' +  curses[Math.floor(Math.random() * curses.length)] + '!';
+                }
+                Favella.speak(message);
             }
-            Favella.speak(message);
             consoleError.apply(window.console, arguments);
         };
 
