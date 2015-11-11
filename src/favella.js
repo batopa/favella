@@ -222,6 +222,66 @@ if ('speechSynthesis' in window) {
             },
 
             /**
+             * Wrap speechSynthesis.pause()
+             * Pause any utterances that are being spoken
+             *
+             * @return {void}
+             */
+            pause: function() {
+                speechSynthesis.pause();
+            },
+
+            /**
+             * Wrap speechSynthesis.resume()
+             * Resume an utterances that was previously paused
+             *
+             * @return {void}
+             */
+            resume: function() {
+                speechSynthesis.resume();
+            },
+
+            /**
+             * Wrap speechSynthesis.cancel()
+             * Stop speaking and remove all utterances from the queue
+             *
+             * @return {void}
+             */
+            cancel: function() {
+                speechSynthesis.cancel();
+            },
+
+            /**
+             * Wrap speechSynthesis.speaking
+             * Return true if Favella is speaking
+             *
+             * @return {boolean}
+             */
+            isSpeaking: function() {
+                return speechSynthesis.speaking;
+            },
+
+            /**
+             * Wrap speechSynthesis.pending
+             * Return true if there are utterances in the queue that have not yet started speaking
+             *
+             * @return {boolean}
+             */
+            isPending: function() {
+                return speechSynthesis.pending;
+            },
+
+            /**
+             * Wrap speechSynthesis.paused
+             * Return true if Favella is speaking
+             *
+             * @return {boolean}
+             */
+            isPaused: function() {
+                return speechSynthesis.paused;
+            },
+
+            /**
              * How do you say "favella"?
              *
              * @param {boolean} fail used to test missing italian voice situation
