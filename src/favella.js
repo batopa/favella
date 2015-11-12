@@ -65,20 +65,10 @@ if ('speechSynthesis' in window) {
         var muteConsole = false;
 
         /**
-         * List of speechSynthesisVoices available
+         * List of SpeechSynthesisVoice available
          * @type {Array}
          */
         var voices = [];
-
-        // cancel pending speaking
-        if (speechSynthesis.speaking) {
-            speechSynthesis.cancel();
-        }
-
-        // wait on voices to be loaded before fetching list
-        window.speechSynthesis.onvoiceschanged = function() {
-            voices = window.speechSynthesis.getVoices();
-        };
 
         var Favella = {
 
@@ -161,6 +151,7 @@ if ('speechSynthesis' in window) {
              */
             getVoice: function(lang) {
                 var voice = null;
+                var voices = this.getVoices();
                 if (voices.length) {
                     voices.forEach(function(v) {
                         if (v.lang == lang) {
@@ -200,7 +191,7 @@ if ('speechSynthesis' in window) {
                         }
                     });
                 var msg = new SpeechSynthesisUtterance();
-                var voices = window.speechSynthesis.getVoices();
+                var voices = this.getVoices();
                 msg.voice = this.getVoice(options.lang);
                 console.log('Voice selected: ' + msg.voice.name);
                 msg.voiceURI = msg.voice.voiceURI;
@@ -218,7 +209,21 @@ if ('speechSynthesis' in window) {
                         }
                     });
 
-                speechSynthesis.speak(msg);
+                window.speechSynthesis.speak(msg);
+            },
+
+            /**
+             * Wrap speechSynthesis.getVoices() and save it in private voices var
+             * Return a list of speechSynthesisVoice available
+             *
+             * @param {boolean} force if you want to force to get voices from speechsynthesis
+             * @return {void}
+             */
+            getVoices: function(force) {
+                if (!voices.length || force) {
+                    voices = window.speechSynthesis.getVoices();
+                }
+                return voices;
             },
 
             /**
@@ -228,7 +233,7 @@ if ('speechSynthesis' in window) {
              * @return {void}
              */
             pause: function() {
-                speechSynthesis.pause();
+                window.speechSynthesis.pause();
             },
 
             /**
@@ -238,7 +243,7 @@ if ('speechSynthesis' in window) {
              * @return {void}
              */
             resume: function() {
-                speechSynthesis.resume();
+                window.speechSynthesis.resume();
             },
 
             /**
@@ -248,7 +253,7 @@ if ('speechSynthesis' in window) {
              * @return {void}
              */
             cancel: function() {
-                speechSynthesis.cancel();
+                window.speechSynthesis.cancel();
             },
 
             /**
@@ -258,7 +263,7 @@ if ('speechSynthesis' in window) {
              * @return {boolean}
              */
             isSpeaking: function() {
-                return speechSynthesis.speaking;
+                return window.speechSynthesis.speaking;
             },
 
             /**
@@ -268,7 +273,7 @@ if ('speechSynthesis' in window) {
              * @return {boolean}
              */
             isPending: function() {
-                return speechSynthesis.pending;
+                return window.speechSynthesis.pending;
             },
 
             /**
@@ -278,7 +283,7 @@ if ('speechSynthesis' in window) {
              * @return {boolean}
              */
             isPaused: function() {
-                return speechSynthesis.paused;
+                return window.speechSynthesis.paused;
             },
 
             /**
@@ -315,6 +320,16 @@ if ('speechSynthesis' in window) {
                 }
             }
 
+        };
+
+        // cancel pending speaking
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+
+        // wait on voices to be loaded before fetching list
+        window.speechSynthesis.onvoiceschanged = function() {
+            Favella.getVoices(true);
         };
 
         /**
