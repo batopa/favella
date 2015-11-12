@@ -41,7 +41,13 @@ if ('speechSynthesis' in window) {
             volume: 1,
             rate: 1,
             pitch: 0,
-            lang: 'en-US'
+            lang: 'en-US',
+            onstart: function(e) {},
+            onend: function(e) {},
+            onerror: function(e) {},
+            onpause: function(e) {},
+            onboundary: function(e) {},
+            onmark: function(e) {},
         };
 
         /**
@@ -59,15 +65,10 @@ if ('speechSynthesis' in window) {
         var muteConsole = false;
 
         /**
-         * List of speechSynthesisVoices available
+         * List of SpeechSynthesisVoice available
          * @type {Array}
          */
         var voices = [];
-
-        // wait on voices to be loaded before fetching list
-        window.speechSynthesis.onvoiceschanged = function() {
-            voices = window.speechSynthesis.getVoices();
-        };
 
         var Favella = {
 
@@ -150,6 +151,7 @@ if ('speechSynthesis' in window) {
              */
             getVoice: function(lang) {
                 var voice = null;
+                var voices = this.getVoices();
                 if (voices.length) {
                     voices.forEach(function(v) {
                         if (v.lang == lang) {
@@ -189,7 +191,7 @@ if ('speechSynthesis' in window) {
                         }
                     });
                 var msg = new SpeechSynthesisUtterance();
-                var voices = window.speechSynthesis.getVoices();
+                var voices = this.getVoices();
                 msg.voice = this.getVoice(options.lang);
                 console.log('Voice selected: ' + msg.voice.name);
                 msg.voiceURI = msg.voice.voiceURI;
@@ -199,15 +201,89 @@ if ('speechSynthesis' in window) {
                 msg.lang = msg.voice.lang;
                 msg.text = message;
 
-                msg.onend = function(e) {
-                    console.log('Finished to speak');
-                };
+                // add events
+                ['onstart', 'onend', 'onerror', 'onboundary', 'onmark']
+                    .forEach(function(name) {
+                        if (options[name] && typeof options[name] == 'function') {
+                            msg[name] = options[name];
+                        }
+                    });
 
-                msg.onerror = function(e) {
-                    console.log(e);
-                };
+                window.speechSynthesis.speak(msg);
+            },
 
-                speechSynthesis.speak(msg);
+            /**
+             * Wrap speechSynthesis.getVoices() and save it in private voices var
+             * Return a list of SpeechSynthesisVoice available
+             *
+             * @param {boolean} force if you want to force to get voices from speechsynthesis
+             * @return {void}
+             */
+            getVoices: function(force) {
+                if (!voices.length || force) {
+                    voices = window.speechSynthesis.getVoices();
+                }
+                return voices;
+            },
+
+            /**
+             * Wrap speechSynthesis.pause()
+             * Pause any utterances that are being spoken
+             *
+             * @return {void}
+             */
+            pause: function() {
+                window.speechSynthesis.pause();
+            },
+
+            /**
+             * Wrap speechSynthesis.resume()
+             * Resume an utterances that was previously paused
+             *
+             * @return {void}
+             */
+            resume: function() {
+                window.speechSynthesis.resume();
+            },
+
+            /**
+             * Wrap speechSynthesis.cancel()
+             * Stop speaking and remove all utterances from the queue
+             *
+             * @return {void}
+             */
+            cancel: function() {
+                window.speechSynthesis.cancel();
+            },
+
+            /**
+             * Wrap speechSynthesis.speaking
+             * Return true if Favella is speaking
+             *
+             * @return {boolean}
+             */
+            isSpeaking: function() {
+                return window.speechSynthesis.speaking;
+            },
+
+            /**
+             * Wrap speechSynthesis.pending
+             * Return true if there are utterances in the queue that have not yet started speaking
+             *
+             * @return {boolean}
+             */
+            isPending: function() {
+                return window.speechSynthesis.pending;
+            },
+
+            /**
+             * Wrap speechSynthesis.paused
+             * Return true if Favella is paused
+             *
+             * @return {boolean}
+             */
+            isPaused: function() {
+                return window.speechSynthesis.paused;
             },
 
             /**
@@ -244,6 +320,16 @@ if ('speechSynthesis' in window) {
                 }
             }
 
+        };
+
+        // cancel pending speaking
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+
+        // wait on voices to be loaded before fetching list
+        window.speechSynthesis.onvoiceschanged = function() {
+            Favella.getVoices(true);
         };
 
         /**
