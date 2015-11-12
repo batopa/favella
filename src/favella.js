@@ -214,7 +214,7 @@ if ('speechSynthesis' in window) {
 
             /**
              * Wrap speechSynthesis.getVoices() and save it in private voices var
-             * Return a list of speechSynthesisVoice available
+             * Return a list of SpeechSynthesisVoice available
              *
              * @param {boolean} force if you want to force to get voices from speechsynthesis
              * @return {void}
@@ -278,7 +278,7 @@ if ('speechSynthesis' in window) {
 
             /**
              * Wrap speechSynthesis.paused
-             * Return true if Favella is speaking
+             * Return true if Favella is paused
              *
              * @return {boolean}
              */
