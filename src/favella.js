@@ -19,50 +19,37 @@ if ('speechSynthesis' in window) {
         var consoleError = window.console.error;
 
         /**
-         * Parental control
-         * If it's true avoid to use curses
-         * @type {boolean}
-         */
-        var parentalControl = false;
-
-        /**
-         * An list of curses to append to console.error() message
-         * @type {Array}
-         */
-        var curses = [];
-
-        /**
-         * Speak options
+         * Configuration. Possible options are:
+         *
+         * - parentalControl: true to avoid using curses
+         * - curses: list of curses to append to console.error() message
+         * - speakOptions: speak options used in SpeechSynthesisUtterance object
+         * - enabled: false to disable Favella.speak()
+         * - muteConsole: true to mute only console.error()
+         * 				  Favella.speak() will continue to work
+         *
          * @type {Object}
          */
-        var speakOptions = {
-            voice: null,
-            voiceURI: 'native',
-            volume: 1,
-            rate: 1,
-            pitch: 0,
-            lang: 'en-US',
-            onstart: function(e) {},
-            onend: function(e) {},
-            onerror: function(e) {},
-            onpause: function(e) {},
-            onboundary: function(e) {},
-            onmark: function(e) {},
+        var config = {
+            parentalControl: false,
+            curses: [],
+            speakOptions: {
+                voice: null,
+                voiceURI: 'native',
+                volume: 1,
+                rate: 1,
+                pitch: 0,
+                lang: 'en-US',
+                onstart: function(e) {},
+                onend: function(e) {},
+                onerror: function(e) {},
+                onpause: function(e) {},
+                onboundary: function(e) {},
+                onmark: function(e) {},
+            },
+            enabled: true,
+            muteConsole: false
         };
-
-        /**
-         * true to make Favella speaks
-         * @type {boolean}
-         */
-        var enabled = true;
-
-        /**
-         * true to mute console.error()
-         * Favella.speak() will continue to work
-         *
-         * @type {Boolean}
-         */
-        var muteConsole = false;
 
         /**
          * List of SpeechSynthesisVoice available
@@ -72,32 +59,39 @@ if ('speechSynthesis' in window) {
 
         var Favella = {
 
+            getConfig: function(what) {
+                var c = (what && typeof config[what] !== 'undefined') ? config[what] : config;
+                return c;
+            },
+
             /**
              * Setup speak options
              * @return {void}
              */
             setup: function(options) {
-                if (options) {
-                    if (options.parentalControl) {
-                        parentalControl = options.parentalControl;
-                    }
-                    if (options.curses) {
-                        curses = options.curses;
-                    }
-                    if (options.mute) {
-                        if (options.mute === true || options.mute == 'console') {
-                            this.mute(options.mute);
-                        }
-                    }
-                    if (options.speakOptions) {
-                        Object.keys(speakOptions)
-                            .forEach(function(item) {
-                                if (options.speakOptions[item]) {
-                                    speakOptions[item] = options.speakOptions[item];
+                if (options && typeof options == 'object') {
+                    Object.keys(options)
+                        .forEach(function(name) {
+                            var value = options[name];
+                            if (name == 'speakOptions' && typeof value == 'object') {
+                                Object.keys(config.speakOptions)
+                                    .forEach(function(item) {
+                                        if (value[item]) {
+                                            config.speakOptions[item] = value[item];
+                                        }
+                                    });
+                            } else if (name == 'curses' && value.isArray()) {
+                                config.curses = value;
+                            } else if (name == 'parentalControl') {
+                                config.parentalControl = !!value;
+                            } else if (name == 'mute') {
+                                if (value === true || value == 'console') {
+                                    config.mute = value;
                                 }
-                            });
-                    }
+                            }
+                        });
                 }
+                return this;
             },
 
             /**
@@ -108,10 +102,10 @@ if ('speechSynthesis' in window) {
              */
             mute: function(what) {
                 if (what && what == 'console') {
-                    muteConsole = true;
+                    config.muteConsole = true;
                     console.log('console.error muted');
                 } else {
-                    enabled = false;
+                    config.enabled = false;
                     console.log('Ho perso la favella (I lost the power of speech)!');
                 }
             },
@@ -123,13 +117,13 @@ if ('speechSynthesis' in window) {
              */
             unmute: function() {
                 // only for console.log() message
-                if (!enabled) {
+                if (!config.enabled) {
                     console.log('Ho riacquistato la favella (I recover the power of speech)!');
-                } else if (muteConsole) {
+                } else if (config.muteConsole) {
                     console.log('console.error unmuted');
                 }
-                enabled = true;
-                muteConsole = false;
+                config.enabled = true;
+                config.muteConsole = false;
             },
 
             /**
@@ -139,7 +133,7 @@ if ('speechSynthesis' in window) {
              * @return {boolean}
              */
             isMute: function(what) {
-                return (what && what == 'console') ? muteConsole : !enabled;
+                return (what && what == 'console') ? config.muteConsole : !config.enabled;
             },
 
             /**
@@ -176,7 +170,7 @@ if ('speechSynthesis' in window) {
              * @return {void}
              */
             speak: function(message, options) {
-                if (!enabled) {
+                if (!config.enabled) {
                     return false;
                 }
                 if (!message || typeof message != 'string') {
@@ -184,10 +178,10 @@ if ('speechSynthesis' in window) {
                 }
 
                 options = options || {};
-                Object.keys(speakOptions)
+                Object.keys(config.speakOptions)
                     .forEach(function(item) {
                         if (!options[item]) {
-                            options[item] = speakOptions[item];
+                            options[item] = config.speakOptions[item];
                         }
                     });
                 var msg = new SpeechSynthesisUtterance();
@@ -210,6 +204,7 @@ if ('speechSynthesis' in window) {
                     });
 
                 window.speechSynthesis.speak(msg);
+                return this;
             },
 
             /**
