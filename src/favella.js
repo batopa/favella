@@ -59,8 +59,14 @@ if ('speechSynthesis' in window) {
 
         var Favella = {
 
-            getConfig: function(what) {
-                var c = (what && typeof config[what] !== 'undefined') ? config[what] : config;
+            /**
+             * Return the current configuration or a specific key
+             *
+             * @param {string} name the name of config key
+             * @return {Object}
+             */
+            getConfig: function(name) {
+                var c = (name && typeof config[name] !== 'undefined') ? config[name] : config;
                 return c;
             },
 
