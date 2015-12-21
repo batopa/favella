@@ -146,6 +146,10 @@ Favella.setup({
 });
 ```
 
+#### `Favella.getConfig(name)`
+
+Return **Favella** configuration or a specific conf if `name` was specified.
+
 #### `Favella.mute(what)`
 
 C'mon, **Favella** shut up!
