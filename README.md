@@ -13,6 +13,8 @@ Unfortunately that API lacking of support in most of main browsers
 so you can expect to work only in Chrome >= 43, Safari >= 8 and Opera >= 32.
 More info on [caniuse.com](http://caniuse.com/#search=speechsynthesis).
 
+From 0.3.0 version also [speech recognition](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-section) is supported [in few browsers](http://caniuse.com/#feat=speech-recognition) :-(
+
 ## Install
 
 ### Install with bower
@@ -57,16 +59,69 @@ console.error('what a beautiful error');
 
 ```js
 Favella.speak('Ciao mondo', {
-    volume: 1, // 0 to 1
-    rate: 2, // 0.1 to 10
-    pitch: 1, // 0 to 2
-    lang: 'it-IT', // lang to use. If it's not available use en-US
-    onstart: function(e) {}, // fired when Favella starts to speak
-    onend: function(e) {}, // fired when Favella ends to speak
-    onerror: function(e) {}, // fired when there was an error
-    onpause: function(e) {}, // fired when Favella is paused
-    onboundary: function(e) {}, // fired when the spoken utterance reaches a word or sentence boundary
-    onmark: function(e) {} // fired when the spoken utterance reaches a named "mark" tag in SSML
+    // the volume from 0 to 1
+    volume: 1,
+    // the rate from 0.1 to 10
+    rate: 2,
+    // the pitch from 0 to 2
+    pitch: 1,
+    // lang to use. If it's not available use en-US
+    lang: 'it-IT',
+    // fired when Favella starts to speak
+    onstart: function(e) {},
+    // fired when Favella ends to speak
+    onend: function(e) {},
+     // fired when there was an error
+    onerror: function(e) {},
+     // fired when Favella is paused
+    onpause: function(e) {},
+     // fired when the spoken utterance reaches a word or sentence boundary
+    onboundary: function(e) {},
+     // fired when the spoken utterance reaches a named "mark" tag in SSML
+    onmark: function(e) {}
+});
+```
+
+#### `Favella.listen(options)`
+
+**Favella** listen you using [speech recognition feature](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-section).
+You can use `options` to customize some `SpeechRecognition` attributes.
+
+```js
+Favella.listen({
+    // the language you want Favella listen
+    lang: 'it-IT',
+    // set true to make Favella listen continuously
+    continuous: false,
+    // controls whether interim results are returned
+    interimResults: false,
+    // fired when audio capture started
+    onaudiostart: function(e) {},
+    // fired when some sound has been detected
+    onsoundstart: function(e) {},
+    // fired when the speech that will be used for speech recognition has started
+    onspeechstart: function(e) {},
+    // fired when the speech that will be used for speech recognition has ended
+    onspeechend: function(e) {},
+    // fired when sound is no longer detected
+    onsoundend: function(e) {},
+    // fired when audio capture ended
+    onaudioend: function(e) {},
+    // fired when speech recognizer returns a result
+    // In additions to the SpeechRecognitionEvent Object it has as second argument a special result object containing useful information:
+    // - isFinal: true if it's the final result of a recognition, false if it's an interim result
+    // - interim: the interim transcript (if any)
+    // - final:  the complete final transcript
+    // - partial: the partial transcript useful if Favella.listen() is used with continuous = true
+    onresult: function(e, result) {},
+    // fired when speech recognizer returns a final result with no recognition hypothesis that meet or exceed the confidence threshold
+    onnomatch: function(e) {},
+    // fired when a speech recognition error occurs
+    onerror: function(e) {},
+    // fired when a speech recognition service has begun
+    onstart: function(e) {},
+    // fired when a speech recognition service has disconnected
+    onend: function(e) {}
 });
 ```
 
@@ -85,7 +140,9 @@ Favella.setup({
     speakOptions: {},
     // define if console.error() speaks or not
     // set to 'console' to mute it
-    mute: 'console'
+    mute: 'console',
+    // options to speech recognition. See Favella.listen() to a complete list
+    recognitionOptions: {}
 });
 ```
 
@@ -146,6 +203,27 @@ It's a wrapper of `speechsynthesis.pending`.
 
 Return true if **Favella** is paused.
 It's a wrapper of `speechsynthesis.paused`.
+
+#### `Favella.isListening()`
+
+Is Favella listening to you? (Speech recognition status)
+
+#### `Favella.stopListen(abort)`
+
+Immediately stop speech recognition using `SpeechRecognition.stop()`.
+Pass `abort = true` to use `SpeechRecognition.abort()` instead.
+
+### Useless but funny API
+
+#### `Favella.parrotMode(lang)`
+
+Toggle parrot mode. When it is active **Favella** listen and repeat you.
+`lang` is required when you want to switch on parrot mode to say to **Favella**
+which language is to be expected.
+
+```js
+Favella.parrotMode('it-IT');
+```
 
 #### `Favella.me(fail)`
 
