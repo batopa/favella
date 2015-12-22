@@ -87,7 +87,8 @@ Favella.speak('Ciao mondo', {
 **Favella** listen to you using [speech recognition feature](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-section).
 You can use `options` to customize some `SpeechRecognition` attributes.
 
-> Pages hosted on HTTP need to ask permission each time they want to make an audio capture in a similar way to requesting access to other items via the browser. Pages on HTTPS do > > not have to repeatedly request access.
+> Pages hosted on HTTP need to ask permission each time they want to make an audio capture in a similar way to requesting access to other items via the browser.
+> Pages on HTTPS do not have to repeatedly request access.
 
 ```js
 Favella.listen({
