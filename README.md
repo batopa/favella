@@ -84,14 +84,16 @@ Favella.speak('Ciao mondo', {
 
 #### `Favella.listen(options)`
 
-**Favella** listen you using [speech recognition feature](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-section).
+**Favella** listen to you using [speech recognition feature](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-section).
 You can use `options` to customize some `SpeechRecognition` attributes.
+
+> Pages hosted on HTTP need to ask permission each time they want to make an audio capture in a similar way to requesting access to other items via the browser. Pages on HTTPS do > > not have to repeatedly request access.
 
 ```js
 Favella.listen({
-    // the language you want Favella listen
+    // the language you want Favella listens
     lang: 'it-IT',
-    // set true to make Favella listen continuously
+    // set true to make Favella continuously listens
     continuous: false,
     // controls whether interim results are returned
     interimResults: false,
@@ -221,7 +223,7 @@ Pass `abort = true` to use `SpeechRecognition.abort()` instead.
 
 #### `Favella.parrotMode(lang)`
 
-Toggle parrot mode. When it is active **Favella** listen and repeat you.
+Toggle parrot mode. When it is active **Favella** listens to and repeats.
 `lang` is required when you want to switch on parrot mode to say to **Favella**
 which language is to be expected.
 
