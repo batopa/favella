@@ -9,13 +9,26 @@ I developed this simple library playing with [Web Speech API](https://dvcs.w3.or
 in particular with [Speech Synthesis API](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#tts-section)
 a web API for controlling a text-to-speech output.
 
-Unfortunately that API lacking of support in most of main browsers
-so you can expect to work only in Chrome >= 43, Safari >= 8 and Opera >= 32.
-More info on [caniuse.com](http://caniuse.com/#search=speechsynthesis).
+Unfortunately not all browsers support that API, so assure to check the list of them at [caniuse.com](http://caniuse.com/#search=speechsynthesis).
 
 From 0.3.0 version also [speech recognition](https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-section) is supported [in few browsers](http://caniuse.com/#feat=speech-recognition) :-(
 
 ## Install
+
+### Install with npm
+
+You can use [npm](https://www.npmjs.com) to install **Favella** in your app
+
+```bash
+# just install
+$ npm install favella
+
+# install and add to package.json dependencies
+$ npm install favella -S
+
+# install and add to package.json dev dependencies
+$ npm install favella -D
+```
 
 ### Install with bower
 
