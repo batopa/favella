@@ -1,6 +1,6 @@
 {
   "name": "favella",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Make your console speak",
   "main": "src/favella.js",
   "directories": {
