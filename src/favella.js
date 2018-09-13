@@ -36,7 +36,8 @@ if ('speechSynthesis' in window) {
             curses: [],
             speakOptions: {
                 voice: null,
-                voiceURI: 'native',
+                voiceName: null,
+                voiceURI: null,
                 volume: 1,
                 rate: 1,
                 pitch: 0,
@@ -197,27 +198,24 @@ if ('speechSynthesis' in window) {
             },
 
             /**
-             * Return the speechSynthesisVoices corresponding to lang
-             * If no lang corresponding exists return 'en-US'
+             * Return the speechSynthesisVoices corresponding to `voice`.
+             * If no corresponding voice was found, return the voice for 'en-US'.
              *
-             * @param {String} lang the language as it-IT, en-US,...
+             * @param {String} voice A speechSynthesisVoices name or a lang as 'it-IT', 'en-US', ...
              * @return {Object} speechSynthesisVoices
              */
-            getVoice: function(lang) {
-                var voice = null;
+            getVoice: function (voice) {
                 var voices = this.getVoices();
                 if (voices.length) {
-                    voices.forEach(function(v) {
-                        if (v.lang == lang) {
-                            voice = v;
+                    for (var i = 0; i < voices.length; i++) {
+                        if ((voices[i].name === voice) || (voices[i].lang === voice)) {
+                            return voices[i];
                         }
-                    });
-                    if (!voice) {
-                        console.log('Sorry, ' + lang + ' is not supported. Fallback to en-US.');
-                        voice = this.getVoice('en-US');
                     }
+
+                    console.log('Sorry, ' + foundVoice + ' is not supported. Fallback to en-US.');
+                    return this.getVoice('en-US');
                 }
-                return voice;
             },
 
             /**
@@ -310,8 +308,7 @@ if ('speechSynthesis' in window) {
                 options = options || {};
                 options = defaults(options, config.speakOptions);
                 var msg = new SpeechSynthesisUtterance();
-                var voices = this.getVoices();
-                msg.voice = this.getVoice(options.lang);
+                msg.voice = this.getVoice(options.voiceName || options.lang);
                 console.log('Voice selected: ' + msg.voice.name);
                 msg.voiceURI = msg.voice.voiceURI;
                 msg.volume = options.volume; // 0 to 1
@@ -454,8 +451,13 @@ if ('speechSynthesis' in window) {
              * @param {boolean} fail used to test missing italian voice situation
              * @return {void}
              */
-            me: function(fail) {
-                var lang = (fail) ? 'en-US' : 'it-IT';
+            me: function (fail) {
+                var lang = 'it-IT';
+                var voiceName = this.getConfig('speakOptions').voiceName;
+                if (fail) {
+                    lang = 'en-US';
+                    voiceName = '';
+                }
                 var voice = this.getVoice(lang);
                 if (voice) {
                     var msg = [];
