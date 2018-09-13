@@ -131,7 +131,7 @@ if ('speechSynthesis' in window) {
                             var value = options[name];
                             if ((name == 'speakOptions' || name == 'recognitionOptions') && typeof value == 'object') {
                                 config[name] = defaults(options[name], config[name]);
-                            } else if (name == 'curses' && value.isArray()) {
+                            } else if (name == 'curses' && Array.isArray(value)) {
                                 config.curses = value;
                             } else if (name == 'parentalControl') {
                                 config.parentalControl = !!value;
