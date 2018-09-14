@@ -8,7 +8,7 @@
 
 if ('speechSynthesis' in window) {
 
-    (function(window) {
+    (function (window) {
 
         'use strict';
 
@@ -36,17 +36,18 @@ if ('speechSynthesis' in window) {
             curses: [],
             speakOptions: {
                 voice: null,
-                voiceURI: 'native',
+                voiceName: null,
+                voiceURI: null,
                 volume: 1,
                 rate: 1,
                 pitch: 0,
                 lang: 'en-US',
-                onstart: function(e) {},
-                onend: function(e) {},
-                onerror: function(e) {},
-                onpause: function(e) {},
-                onboundary: function(e) {},
-                onmark: function(e) {},
+                onstart: function (e) { },
+                onend: function (e) { },
+                onerror: function (e) { },
+                onpause: function (e) { },
+                onboundary: function (e) { },
+                onmark: function (e) { },
             },
             enabled: true,
             muteConsole: false,
@@ -54,17 +55,17 @@ if ('speechSynthesis' in window) {
                 lang: 'en-US',
                 continuous: false,
                 interimResults: false,
-                onaudiostart: function(e) {},
-                onsoundstart: function(e) {},
-                onspeechstart: function(e) {},
-                onspeechend: function(e) {},
-                onsoundend: function(e) {},
-                onaudioend: function(e) {},
-                onresult: function(e, result) {},
-                onnomatch: function(e) {},
-                onerror: function(e) {},
-                onstart: function(e) {},
-                onend: function(e) {}
+                onaudiostart: function (e) { },
+                onsoundstart: function (e) { },
+                onspeechstart: function (e) { },
+                onspeechend: function (e) { },
+                onsoundend: function (e) { },
+                onaudioend: function (e) { },
+                onresult: function (e, result) { },
+                onnomatch: function (e) { },
+                onerror: function (e) { },
+                onstart: function (e) { },
+                onend: function (e) { }
             }
         };
 
@@ -94,10 +95,10 @@ if ('speechSynthesis' in window) {
          * @param {Object} defaultObj the referred default object
          * @return {Object}
          */
-        var defaults = function(obj, defaultObj) {
+        var defaults = function (obj, defaultObj) {
             var result = {};
             Object.keys(defaultObj)
-                .forEach(function(key) {
+                .forEach(function (key) {
                     if (typeof obj[key] === 'undefined') {
                         result[key] = defaultObj[key];
                     } else if (typeof defaultObj[key] !== 'undefined') {
@@ -115,7 +116,7 @@ if ('speechSynthesis' in window) {
              * @param {string} name the name of config key
              * @return {Object}
              */
-            getConfig: function(name) {
+            getConfig: function (name) {
                 var c = (name && typeof config[name] !== 'undefined') ? config[name] : config;
                 return c;
             },
@@ -124,14 +125,14 @@ if ('speechSynthesis' in window) {
              * Setup speak options
              * @return {void}
              */
-            setup: function(options) {
+            setup: function (options) {
                 if (options && typeof options == 'object') {
                     Object.keys(options)
-                        .forEach(function(name) {
+                        .forEach(function (name) {
                             var value = options[name];
                             if ((name == 'speakOptions' || name == 'recognitionOptions') && typeof value == 'object') {
                                 config[name] = defaults(options[name], config[name]);
-                            } else if (name == 'curses' && value.isArray()) {
+                            } else if (name == 'curses' && Array.isArray(value)) {
                                 config.curses = value;
                             } else if (name == 'parentalControl') {
                                 config.parentalControl = !!value;
@@ -151,7 +152,7 @@ if ('speechSynthesis' in window) {
              * @param {String} what if it is 'console' then just silence the console.error()
              * @return {void}
              */
-            mute: function(what) {
+            mute: function (what) {
                 if (what && what == 'console') {
                     config.muteConsole = true;
                     console.log('console.error muted');
@@ -166,7 +167,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {void}
              */
-            unmute: function() {
+            unmute: function () {
                 // only for console.log() message
                 if (!config.enabled) {
                     console.log('Ho riacquistato la favella (I recover the power of speech)!');
@@ -183,7 +184,7 @@ if ('speechSynthesis' in window) {
              * @param {String} what
              * @return {boolean}
              */
-            isMute: function(what) {
+            isMute: function (what) {
                 return (what && what == 'console') ? config.muteConsole : !config.enabled;
             },
 
@@ -192,32 +193,29 @@ if ('speechSynthesis' in window) {
              *
              * @return {Boolean}
              */
-            isListening: function() {
+            isListening: function () {
                 return !!recognition;
             },
 
             /**
-             * Return the speechSynthesisVoices corresponding to lang
-             * If no lang corresponding exists return 'en-US'
+             * Return the speechSynthesisVoices corresponding to `voice`.
+             * If no corresponding voice was found, return the voice for 'en-US'.
              *
-             * @param {String} lang the language as it-IT, en-US,...
+             * @param {String} voice A speechSynthesisVoices name or a lang as 'it-IT', 'en-US', ...
              * @return {Object} speechSynthesisVoices
              */
-            getVoice: function(lang) {
-                var voice = null;
+            getVoice: function (voice) {
                 var voices = this.getVoices();
                 if (voices.length) {
-                    voices.forEach(function(v) {
-                        if (v.lang == lang) {
-                            voice = v;
+                    for (var i = 0; i < voices.length; i++) {
+                        if ((voices[i].name === voice) || (voices[i].lang === voice)) {
+                            return voices[i];
                         }
-                    });
-                    if (!voice) {
-                        console.log('Sorry, ' + lang + ' is not supported. Fallback to en-US.');
-                        voice = this.getVoice('en-US');
                     }
+
+                    console.log('Sorry, ' + foundVoice + ' is not supported. Fallback to en-US.');
+                    return this.getVoice('en-US');
                 }
-                return voice;
             },
 
             /**
@@ -227,16 +225,16 @@ if ('speechSynthesis' in window) {
              *                         See config.recognitionOptions for the defaults used
              * @return {Object} Favella
              */
-            listen: function(options) {
+            listen: function (options) {
                 if (window.SpeechRecognition && !this.isListening()) {
                     var finalTranscript = '';
                     recognition = new SpeechRecognition();
                     options = options || {};
                     options = defaults(options, config.recognitionOptions);
                     Object.keys(options)
-                        .forEach(function(name) {
+                        .forEach(function (name) {
                             if (name == 'onresult') {
-                                recognition.onresult = function(e) {
+                                recognition.onresult = function (e) {
                                     var tmpTranscript = '',
                                         interimTranscript = '',
                                         partialTranscript = '',
@@ -252,17 +250,17 @@ if ('speechSynthesis' in window) {
                                     options.onresult(e, {
                                         isFinal: !interimTranscript,
                                         interim: interimTranscript,
-                                        final:  finalTranscript,
+                                        final: finalTranscript,
                                         partial: partialTranscript
                                     });
                                 };
                             } else if (name == 'onend') {
-                                recognition.onend = function(e) {
+                                recognition.onend = function (e) {
                                     options.onend(e);
                                     recognition = null;
                                 };
                             } else if (name == 'onerror') {
-                                recognition.onerror = function(eventError) {
+                                recognition.onerror = function (eventError) {
                                     console.error(eventError.type + ': ' + eventError.error);
                                 };
                             } else {
@@ -280,7 +278,7 @@ if ('speechSynthesis' in window) {
              * @param {Boolean} abort true to abort instead of stop
              * @return {void}
              */
-            stopListen: function(abort) {
+            stopListen: function (abort) {
                 if (this.isListening()) {
                     if (abort) {
                         recognition.abort();
@@ -299,7 +297,7 @@ if ('speechSynthesis' in window) {
              *                         see speakOptions for all options
              * @return {Object} Favella
              */
-            speak: function(message, options) {
+            speak: function (message, options) {
                 if (!config.enabled) {
                     return false;
                 }
@@ -310,19 +308,18 @@ if ('speechSynthesis' in window) {
                 options = options || {};
                 options = defaults(options, config.speakOptions);
                 var msg = new SpeechSynthesisUtterance();
-                var voices = this.getVoices();
-                msg.voice = this.getVoice(options.lang);
+                msg.voice = this.getVoice(options.voiceName || options.lang);
                 console.log('Voice selected: ' + msg.voice.name);
                 msg.voiceURI = msg.voice.voiceURI;
                 msg.volume = options.volume; // 0 to 1
                 msg.rate = options.rate; // 0.1 to 10
-                msg.pitch = options.pitch; //0 to 2
+                msg.pitch = options.pitch; // 0 to 2
                 msg.lang = msg.voice.lang;
                 msg.text = message;
 
                 // add events
                 ['onstart', 'onend', 'onerror', 'onboundary', 'onmark']
-                    .forEach(function(name) {
+                    .forEach(function (name) {
                         if (options[name] && typeof options[name] == 'function') {
                             msg[name] = options[name];
                         }
@@ -339,7 +336,7 @@ if ('speechSynthesis' in window) {
              * @param {String} lang the language to use
              * @return {void}
              */
-            parrotMode: function(lang) {
+            parrotMode: function (lang) {
                 if (!this.isListening()) {
                     var v = this.getVoice(lang);
                     if (v.lang != lang) {
@@ -348,12 +345,12 @@ if ('speechSynthesis' in window) {
                     }
                     var that = this;
                     this.speak('Parrot mode on', {
-                        onend: function() {
+                        onend: function () {
                             var recOpt = {
                                 lang: v.lang,
                                 interimResults: false,
                                 continuous: true,
-                                onresult: function(e, result) {
+                                onresult: function (e, result) {
                                     if (result.isFinal && result.partial) {
                                         console.log(result.partial);
                                         that.speak(result.partial, {
@@ -381,7 +378,7 @@ if ('speechSynthesis' in window) {
              * @param {boolean} force if you want to force to get voices from speechsynthesis
              * @return {void}
              */
-            getVoices: function(force) {
+            getVoices: function (force) {
                 if (!voices.length || force) {
                     voices = window.speechSynthesis.getVoices();
                 }
@@ -394,7 +391,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {void}
              */
-            pause: function() {
+            pause: function () {
                 window.speechSynthesis.pause();
             },
 
@@ -404,7 +401,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {void}
              */
-            resume: function() {
+            resume: function () {
                 window.speechSynthesis.resume();
             },
 
@@ -414,7 +411,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {void}
              */
-            cancel: function() {
+            cancel: function () {
                 window.speechSynthesis.cancel();
             },
 
@@ -424,7 +421,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {boolean}
              */
-            isSpeaking: function() {
+            isSpeaking: function () {
                 return window.speechSynthesis.speaking;
             },
 
@@ -434,7 +431,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {boolean}
              */
-            isPending: function() {
+            isPending: function () {
                 return window.speechSynthesis.pending;
             },
 
@@ -444,7 +441,7 @@ if ('speechSynthesis' in window) {
              *
              * @return {boolean}
              */
-            isPaused: function() {
+            isPaused: function () {
                 return window.speechSynthesis.paused;
             },
 
@@ -454,8 +451,13 @@ if ('speechSynthesis' in window) {
              * @param {boolean} fail used to test missing italian voice situation
              * @return {void}
              */
-            me: function(fail) {
-                var lang = (fail) ? 'en-US' : 'it-IT';
+            me: function (fail) {
+                var lang = 'it-IT';
+                var voiceName = this.getConfig('speakOptions').voiceName;
+                if (fail) {
+                    lang = 'en-US';
+                    voiceName = '';
+                }
                 var voice = this.getVoice(lang);
                 if (voice) {
                     var msg = [];
@@ -463,17 +465,18 @@ if ('speechSynthesis' in window) {
                         msg.push('favella');
                     } else {
                         msg = [
-                            'Sorry, I cannot pronunce properly because missing italian voice. I will try anyway.',
+                            'Sorry, I cannot pronunce it properly because italian voice is missing. I will try anyway.',
                             'favella.',
                             'Shit!'
                         ];
                     }
                     var that = this;
-                    msg.forEach(function(m) {
+                    msg.forEach(function (m) {
                         that.speak(m, {
                             volume: 1,
                             rate: 1,
                             pitch: 0,
+                            voiceName: voiceName,
                             lang: voice.lang
                         });
                     });
@@ -490,7 +493,7 @@ if ('speechSynthesis' in window) {
         }
 
         // wait on voices to be loaded before fetching list
-        window.speechSynthesis.onvoiceschanged = function() {
+        window.speechSynthesis.onvoiceschanged = function () {
             Favella.getVoices(true);
         };
 
@@ -499,13 +502,13 @@ if ('speechSynthesis' in window) {
          * Before write in console it speaks the error
          * @return {void}
          */
-        window.console.error = function() {
+        window.console.error = function () {
             if (!Favella.isMute('console')) {
                 var args = Array.prototype.slice.call(arguments);
                 var message = args[0];
                 var config = Favella.getConfig();
                 if (!config.parentalControl && config.curses.length) {
-                    message += '. ' +  config.curses[Math.floor(Math.random() * config.curses.length)] + '!';
+                    message += '. ' + config.curses[Math.floor(Math.random() * config.curses.length)] + '!';
                 }
                 Favella.speak(message);
             }
